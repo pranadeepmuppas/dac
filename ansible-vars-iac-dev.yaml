@@ -1,0 +1,122 @@
+---
+## Cluster
+NAMESPACE: viya-dev
+CLUSTER_NAME: clinex-dev-eks
+
+## MISC
+DEPLOY: true # Set to false to stop at generating the manifest
+LOADBALANCER_SOURCE_RANGES: ["10.0.0.0/8"]
+TFSTATE: /data/tfstate/dev/terraform.tfstate
+V4_DEPLOYMENT_OPERATOR_ENABLED: false
+
+## Storage
+V4_CFG_MANAGE_STORAGE: true
+
+## SAS API Access
+# V4_CFG_SAS_API_KEY: li33Jni1pf8LqA3HPpAGJgDHnJSGvblG
+# V4_CFG_SAS_API_SECRET: HvC65yYVs6B27O2C
+V4_CFG_ORDER_NUMBER: 9CY3T8
+V4_CFG_CADENCE_NAME: lts
+V4_CFG_CADENCE_VERSION: 2024.03
+V4_CFG_DEPLOYMENT_ASSETS: /data/assets/dev/SASViyaV4_9CY3T8_1_lts_2024.03_20240614.1718360048711_deploymentAssets_2024-06-14T170214.tar
+V4_CFG_LICENSE: /data/assets/dev/license.jwt
+V4_CFG_CERTS: /data/assets/dev/certs.zip
+V4_CFG_SITEDEFAULT: /data/clinex-dev-eks/viya-share/site-config/sitedefault.yaml
+
+## CR Access
+V4_CFG_CR_USER: AWS
+V4_CFG_CR_URL: 668749497752.dkr.ecr.us-west-2.amazonaws.com/sasviya
+V4_CFG_CR_PASSWORD:
+
+## Ingress
+V4_CFG_INGRESS_TYPE: ingress
+V4_CFG_INGRESS_FQDN: solasstudiodev.gilead.com
+V4_CFG_TLS_MODE: full-stack # [full-stack|front-door|ingress-only|disabled]
+V4_CFG_INGRESS_MODE: private
+V4_CFG_AWS_LB_SUBNETS: subnet-04f4ae0f190e31ab7,subnet-07e9cc0743e428968
+
+## Postgres
+V4_CFG_POSTGRES_TYPE: external
+## LDAP
+V4_CFG_EMBEDDED_LDAP_ENABLE: false
+
+## TLS
+V4_CFG_TLS_TRUSTED_CA_CERTS: /data/ca/dev
+V4_CFG_TLS_KEY: /data/certificate/dev/new-cert/solasstudiodev.gilead.com.key
+V4_CFG_TLS_CERT: /data/certificate/dev/new-cert/solasstudiodev.gilead.com.crt
+
+## Consul UI
+V4_CFG_CONSUL_ENABLE_LOADBALANCER: false
+
+## SAS/CONNECT
+V4_CFG_CONNECT_ENABLE_LOADBALANCER: false
+
+## Monitoring and Logging
+## uncomment and update the below values when deploying the viya4-monitoring-kubernetes stack
+V4M_BASE_DOMAIN: solasstudiodev.gilead.com
+V4M_ROUTING: path-based
+V4M_GRAFANA_PASSWORD: sasviya
+V4M_KIBANA_PASSWORD: sasviya
+V4M_KIBANA_LOGADM_PASSWORD: sasviya
+V4M_KIBANASERVER_PASSWORD: sasviya
+V4M_LOGCOLLECTOR_PASSWORD: sasviya
+V4M_METRICGETTER_PASSWORD: sasviya
+
+## Viya Start and Stop Schedule
+## uncomment and update the values below with CronJob schedule expressions if you would
+## like to start and stop your Viya Deployment on a schedule
+# V4_CFG_VIYA_START_SCHEDULE: "0 7 * * 1-5"
+# V4_CFG_VIYA_STOP_SCHEDULE: "0 19 * * 1-5"
+
+METRICS_SERVER_CONFIG:
+  image:
+    registry: 668749497752.dkr.ecr.us-west-2.amazonaws.com
+    repository: metrics-server
+
+INGRESS_NGINX_CONFIG:
+  controller:
+    image:
+      registry: 668749497752.dkr.ecr.us-west-2.amazonaws.com
+      image: ingress-nginx/controller
+      digest: sha256:aedc9ff2572625821c0ec82acf3b9a6a39c8190f9517f5c5790d1ebb5ad418dd
+    admissionWebhooks:
+      patch:
+        image:
+          registry: 668749497752.dkr.ecr.us-west-2.amazonaws.com
+          image: ingress-nginx/kube-webhook-certgen
+          digest: sha256:753f7221776f9e32dce8cabb74c2a011d3049f4e55e9e1d3dd101d713fe18607
+
+NFS_CLIENT_CONFIG:
+  image:
+    repository: 668749497752.dkr.ecr.us-west-2.amazonaws.com/nfs-subdir-external-provisioner
+
+PG_NFS_CLIENT_CONFIG:
+  image:
+    repository: 668749497752.dkr.ecr.us-west-2.amazonaws.com/nfs-subdir-external-provisioner
+
+CLUSTER_AUTOSCALER_CONFIG:
+  image:
+    repository: 668749497752.dkr.ecr.us-west-2.amazonaws.com/cluster-autoscaler
+
+EBS_CSI_DRIVER_CONFIG:
+  image:
+    repository: 668749497752.dkr.ecr.us-west-2.amazonaws.com/public.ecr.aws/ebs-csi-driver/aws-ebs-csi-driver
+  sidecars:
+    provisioner:
+      image:
+        repository: 668749497752.dkr.ecr.us-west-2.amazonaws.com/k8s.gcr.io/sig-storage/csi-provisioner
+    attacher:
+      image:
+        repository: 668749497752.dkr.ecr.us-west-2.amazonaws.com/k8s.gcr.io/sig-storage/csi-attacher
+    snapshotter:
+      image:
+        repository: 668749497752.dkr.ecr.us-west-2.amazonaws.com/k8s.gcr.io/sig-storage/csi-snapshotter
+    livenessProbe:
+      image:
+        repository: 668749497752.dkr.ecr.us-west-2.amazonaws.com/k8s.gcr.io/sig-storage/livenessprobe
+    resizer:
+      image:
+        repository: 668749497752.dkr.ecr.us-west-2.amazonaws.com/k8s.gcr.io/sig-storage/csi-resizer
+    nodeDriverRegistrar:
+      image:
+        repository: 668749497752.dkr.ecr.us-west-2.amazonaws.com/k8s.gcr.io/sig-storage/csi-node-driver-registrar
